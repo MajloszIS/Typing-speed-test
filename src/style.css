@@ -1,0 +1,194 @@
+body {
+  background-color: hsl(0, 0%, 7%);
+  color: hsl(240, 1%, 59%);
+  font-family: 'Sora', sans-serif;
+}
+
+#main {
+  width: auto;
+  max-width: 800px;
+  height: auto;
+  margin: 0 auto;
+}
+
+#banner {
+  border-bottom: 1px solid hsl(240, 3%, 46%);
+  padding-bottom: 10px;
+}
+
+#upper {
+  display: flex;
+  justify-content: space-between;
+}
+
+#logo {
+
+}
+
+#personal-best {
+  display: flex;
+  padding-right: 0 15px;
+}
+
+#stats {
+  display: flex;
+  justify-content: space-between;
+}
+
+#left {
+  display: flex;
+  justify-content: space-around;
+}
+
+#word-per-min {
+  display: flex;
+}
+
+#word-per-min p {
+  padding-right: 10px;
+  margin-right: 10px;
+  border-right: 1px solid hsl(240, 3%, 46%);
+}
+
+#accuracy {
+  
+}
+
+#accuracy p {
+  padding-right: 10px;
+  margin-right: 10px;
+  border-right: 1px solid hsl(240, 3%, 46%);
+}
+
+#time {
+ 
+}
+
+#time p {
+  padding-right: 10px;
+  margin-right: 10px;
+}
+  
+#right {
+  display: flex;
+  justify-content: space-around;
+}
+
+#difficulty {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+#difficulty p {
+  margin: 0px;
+  padding: 0px;
+  margin-right: 10px;
+}
+
+#difficulty input {
+  display: none;
+  cursor: pointer;
+}
+
+#difficulty label{
+  cursor: pointer;
+}
+
+#difficulty input:checked + label {
+  border: 1px solid hsl(214, 100%, 55%);
+  color: hsl(214, 100%, 55%);
+}
+
+#mode {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+#mode p {
+  margin-left: 10px;
+  padding-left: 10px;
+  border-left: 1px solid hsl(240, 3%, 46%);
+}
+
+#mode input {
+  display: none;
+}
+
+#mode label{
+  cursor: pointer;
+}
+
+#mode input:checked + label {
+  border: 1px solid hsl(214, 100%, 55%);
+  color: hsl(214, 100%, 55%);
+}
+
+.btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: none;
+  color: hsl(0, 0%, 100%);
+  border-radius: 7px;
+  border: 1px solid hsl(240, 3%, 46%);
+  width: auto;
+  height: 30px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+#typingArea {
+  height: 300px;
+  border-bottom: 1px solid hsl(240, 3%, 46%);
+}
+
+.restart-btn {
+  width: auto;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.restart-btn button{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: hsl(0, 0%, 15%);
+  color: hsl(0, 0%, 100%);
+  border-radius: 7px;
+  border: none;
+  width: auto;
+  height: 30px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.restart-btn img{
+  width: 13px;
+  margin: 5px;
+}
+
+.neutral {
+  color: gray;
+}
+
+.wrong {
+  color: hsl(354, 63%, 57%);
+  text-decoration: underline;
+}
+
+.correct {
+  color: hsl(140, 63%, 57%);
+}
+
+.current {
+  background-color: hsl(240, 1%, 59%);
+}

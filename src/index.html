@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="style.css" />
+        <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700&display=swap" rel="stylesheet">
+        <link rel="shortcut icon" href="..\assets\images\favicon-32x32.png" type="image/x-icon">
+        <script type="module" src="script.js" defer></script>
+
+        <title>Typing speed test</title>
+    </head>
+    <body>
+        <div id="main">
+
+            <div id="banner">
+
+                <div id="upper">
+
+                    <div id="logo">
+                        <img src="..\assets\images\logo-large.svg" alt="typing speed test">
+                    </div>
+                    <div id="personal-best">
+                        <img src="..\assets\images\icon-personal-best.svg" alt="personal best icon">
+                        <p>Personal best: </p><p></p>
+                    </div>
+
+                </div>
+
+                <div id="stats">
+
+                    <div id="left">
+                        <div id="word-per-min">
+                            <p>WPM: </p>
+                        </div>
+                        <div id="accuracy">
+                            <p>Accuracy: </p>
+                        </div>
+                        <div id="time">
+                            <p>Time:</p> 
+                        </div>
+                    </div>
+
+                    <div id="right">
+                        <div id="difficulty">
+                            <p>Difficulty: </p>
+                            <input type="radio" name="difficulty" id="easy" value="easy">
+                            <label for="easy" class="btn">Easy</label>
+
+                            <input type="radio" name="difficulty" id="medium" value="medium"> 
+                            <label for="medium" class="btn">Medium</label>
+
+                            <input type="radio" name="difficulty" id="hard" value="hard">
+                            <label for="hard" class="btn">Hard</label>
+                        </div>
+                        <div id="mode">
+                            <p>Mode: </p>
+                            <input type="radio" name="mode" id="Timed" value="Timed"> 
+                            <label for="Timed" class="btn">Timed(60s)</label>
+
+                            <input type="radio" name="mode" id="Passage" value="Passage">
+                            <label for="Passage" class="btn">Passage</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="typingArea">
+                <p id="text" class="neutral"></p>
+            </div>
+
+            <div class="restart-btn">
+                <button type="submit">
+                    <span>Restart Time</span>
+                    <img src="..\assets\images\icon-restart.svg" alt="restart button icon">
+                </button>
+            </div>
+        </div>
+    </body>
+</html>
