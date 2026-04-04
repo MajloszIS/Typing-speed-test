@@ -1,4 +1,5 @@
 let iter = 0;
+let prevIter;
 
 let currentDifficulty = "easy";
 let currentMode = "Timed";
@@ -6,11 +7,16 @@ let currentMode = "Timed";
 let data;
 let text;
 let letters;
-let words;
 
+let words;
 let correctWords = 0;
 let currentWordIndex = 0;
+
 let chars = "";
+let correctChars = 0;
+let totalChars = 0;
+
+let startTime = null;
 
 document.addEventListener("change", (e) => {
     if (e.target.name === "difficulty") {
@@ -59,9 +65,33 @@ function getSpan() {
     return letters;
 }
 
+function calculateWPM() {
+    const now = Date.now();
+    const timeInMinutes = (now - startTime) / 1000 / 60;
+
+    const wpm = correctWords / timeInMinutes;
+
+    return Math.round(wpm);
+}
+
+function calculateAccuracy() {
+    if (totalChars === 0) return 100;
+
+    return Math.round((correctChars / totalChars) * 100);
+}
+
 text = getText();
 letters = getSpan();
 words = getWords(text);
+
+const wpmElement = document.getElementById("WPM");
+let wpm = 0;
+wpmElement.textContent = `WPM: ${wpm}`;
+
+const accElement = document.getElementById("ACC");
+let acc = 100;
+accElement.textContent = `Accuracy: ${acc}%`;
+
 
 function updateCursor(prevIter) {
     if (prevIter < letters.length && prevIter >= 0) {
@@ -73,30 +103,68 @@ function updateCursor(prevIter) {
     }
 }
 
+
 document.addEventListener("keydown", (e) => {
-    let prevIter = iter;
+    if (!startTime) {
+        startTime = Date.now();
+    }
+
+    wpm = calculateAccuracy();
+    wpmElement.textContent = `WPM: ${wpm}`;
+
+    let acc = 100;
+    accElement.textContent = `Accuracy: ${acc}%`;
+
+    prevIter = iter;
+
     if (e.key == "Backspace") {
         if (iter > 0) {
             iter--;
             letters[iter].classList.remove("correct", "wrong");
             letters[iter].classList.add("neutral");
+
+            if (letters[iter].classList.contains("correct")) {
+                correctChars--;
+                totalChars--;
+            } else if (letters[iter].classList.contains("wrong")) {
+                totalChars--;
+            }
+
+            chars = chars.slice(0, -1);
+            console.log(chars)
         }
     } else {
         if (e.key.length === 1) {
+            totalChars++;
+
             if (e.key === text[iter]) {
                 letters[iter].classList.add("correct");
 
                 if(e.key !== " "){
                     chars += e.key;
+                    console.log(chars)
                 }
 
-                if(chars === words[currentWordIndex]){
-                    correctWords++;
-                    currentWordIndex++
-                    chars = "";
-                }
+                correctChars++;
             } else {
                 letters[iter].classList.add("wrong");
+
+                if(e.key !== " "){
+                    chars += e.key;
+                    console.log(chars)
+                }
+            }
+
+            if(e.key === " "){
+                chars = "";
+            }
+
+            if(chars === words[currentWordIndex]){
+                console.log(chars)
+                correctWords++;
+                console.log(correctWords)
+                currentWordIndex++
+                chars = "";
             }
 
             iter++;
