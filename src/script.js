@@ -18,6 +18,10 @@ let totalChars = 0;
 
 let startTime = null;
 
+let timeLeft = 60;
+let timerInterval = null;
+
+
 document.addEventListener("change", (e) => {
     if (e.target.name === "difficulty") {
         currentDifficulty = e.target.value;
@@ -103,12 +107,45 @@ function updateCursor(prevIter) {
     }
 }
 
+const timeElement = document.getElementById("timer");
+
+function startTimer()
+{
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        timeElement.innerHTML = `Time: ${timeLeft}`;
+        if(timeLeft <= 0) {
+            clearInterval(timerInterval);
+            endGame();
+        }
+    }, 1000);
+}
+
+function endGame()
+{
+    const pbElement = document.getElementById("personal-best-paragraph");
+    let personalBest = parseInt(localStorage.getItem("PB"));
+
+    if(personalBest <= wpm || isNaN(personalBest))
+    {
+        localStorage.setItem("PB", wpm);
+        pbElement.textContent = `Pesronal best: ${wpm}`;
+        console.log(wpm)
+    }
+    else
+    {
+        pbElement.textContent = `Pesronal best: ${personalBest}`;
+        console.log(wpm)
+    }
+}
+
 document.addEventListener("keydown", (e) => {
     prevIter = iter;
 
     if (e.key == "Backspace") 
     {
-        if (iter > 0) {
+        if (iter > 0) 
+        {
             iter--;
             const wasCorrect = letters[iter].classList.contains("correct");
             const wasWrong = letters[iter].classList.contains("wrong");
@@ -116,25 +153,37 @@ document.addEventListener("keydown", (e) => {
             letters[iter].classList.remove("correct", "wrong");
             letters[iter].classList.add("neutral");
 
-            if (wasCorrect) {
+            if (wasCorrect) 
+            {
                 correctChars--;
                 totalChars--;
-            } else if (wasWrong) {
+            } 
+            else if (wasWrong) 
+            {
                 totalChars--;
             }
 
             chars = chars.slice(0, -1);
             console.log(chars);
-    }
-    } else {
-        if (e.key.length === 1) {
-            if (!startTime) {
+        }
+    } 
+    else 
+    {
+        if (e.key.length === 1) 
+        {
+            if (!startTime) 
+            {
                 startTime = Date.now();
+                if(currentMode == "Timed")
+                {
+                    startTimer();
+                }    
             }
 
             totalChars++;
 
-            if (e.key === text[iter]) {
+            if (e.key === text[iter]) 
+            {
                 letters[iter].classList.add("correct");
 
                 if (e.key !== " ") {
@@ -143,28 +192,41 @@ document.addEventListener("keydown", (e) => {
                 }
 
                 correctChars++;
-            } else {
+            } 
+            else 
+            {
                 letters[iter].classList.add("wrong");
 
-                if (e.key !== " ") {
+                if (e.key !== " ") 
+                {
                     chars += e.key;
                     console.log(chars);
                 }
             }
-
-            if (e.key === " ") {
-                chars = "";
-            }
-
-            if (chars === words[currentWordIndex]) {
+            
+            if (chars === words[currentWordIndex]) 
+            {
                 console.log(chars);
                 correctWords++;
                 console.log(correctWords);
-                currentWordIndex++;
                 chars = "";
             }
 
+            if (e.key === " ") 
+            {
+                chars = "";
+                currentWordIndex++;
+            }
+
             iter++;
+
+            if(iter >= letters.length-1)
+            {
+                console.log(iter);
+                console.log(letters.length);
+                endGame();
+                resetState();
+            }
         }
     }
 
@@ -191,6 +253,9 @@ function resetState() {
     startTime = null;
     iter = 0;
     prevIter = undefined;
+    timeLeft = 60;
+    clearInterval(timerInterval);
+    timeElement.innerHTML = `Time: 60`;
 
     wpm = 0;
     wpmElement.textContent = `WPM: ${wpm}`;
