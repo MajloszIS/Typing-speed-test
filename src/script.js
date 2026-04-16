@@ -54,8 +54,7 @@ function getText() {
 }
 
 function getWords(text) {
-    const words = text
-        .split(" ")
+    const words = text.split(" ");
 
     return words;
 }
@@ -66,9 +65,11 @@ function getSpan() {
 }
 
 function calculateWPM() {
+    if (!startTime) return 0;
     const now = Date.now();
     const timeInMinutes = (now - startTime) / 1000 / 60;
 
+    if (timeInMinutes === 0) return 0;
     const wpm = correctWords / timeInMinutes;
 
     return Math.round(wpm);
@@ -92,7 +93,6 @@ const accElement = document.getElementById("ACC");
 let acc = 100;
 accElement.textContent = `Accuracy: ${acc}%`;
 
-
 function updateCursor(prevIter) {
     if (prevIter < letters.length && prevIter >= 0) {
         letters[prevIter].classList.remove("current");
@@ -103,67 +103,64 @@ function updateCursor(prevIter) {
     }
 }
 
-
 document.addEventListener("keydown", (e) => {
-    if (!startTime) {
-        startTime = Date.now();
-    }
-
-    wpm = calculateAccuracy();
-    wpmElement.textContent = `WPM: ${wpm}`;
-
-    let acc = 100;
-    accElement.textContent = `Accuracy: ${acc}%`;
-
     prevIter = iter;
 
-    if (e.key == "Backspace") {
+    if (e.key == "Backspace") 
+    {
         if (iter > 0) {
             iter--;
+            const wasCorrect = letters[iter].classList.contains("correct");
+            const wasWrong = letters[iter].classList.contains("wrong");
+
             letters[iter].classList.remove("correct", "wrong");
             letters[iter].classList.add("neutral");
 
-            if (letters[iter].classList.contains("correct")) {
+            if (wasCorrect) {
                 correctChars--;
                 totalChars--;
-            } else if (letters[iter].classList.contains("wrong")) {
+            } else if (wasWrong) {
                 totalChars--;
             }
 
             chars = chars.slice(0, -1);
-            console.log(chars)
-        }
+            console.log(chars);
+    }
     } else {
         if (e.key.length === 1) {
+            if (!startTime) {
+                startTime = Date.now();
+            }
+
             totalChars++;
 
             if (e.key === text[iter]) {
                 letters[iter].classList.add("correct");
 
-                if(e.key !== " "){
+                if (e.key !== " ") {
                     chars += e.key;
-                    console.log(chars)
+                    console.log(chars);
                 }
 
                 correctChars++;
             } else {
                 letters[iter].classList.add("wrong");
 
-                if(e.key !== " "){
+                if (e.key !== " ") {
                     chars += e.key;
-                    console.log(chars)
+                    console.log(chars);
                 }
             }
 
-            if(e.key === " "){
+            if (e.key === " ") {
                 chars = "";
             }
 
-            if(chars === words[currentWordIndex]){
-                console.log(chars)
+            if (chars === words[currentWordIndex]) {
+                console.log(chars);
                 correctWords++;
-                console.log(correctWords)
-                currentWordIndex++
+                console.log(correctWords);
+                currentWordIndex++;
                 chars = "";
             }
 
@@ -171,5 +168,38 @@ document.addEventListener("keydown", (e) => {
         }
     }
 
+    wpm = calculateWPM();
+    wpmElement.textContent = `WPM: ${wpm}`;
+
+    let acc = calculateAccuracy();
+    accElement.textContent = `Accuracy: ${acc}%`;
+
     updateCursor(prevIter);
 });
+
+
+
+function resetState() {
+    text = getText();;
+    letters = getSpan();
+    words = getWords(text);
+    correctWords = 0;
+    currentWordIndex = 0;
+    chars = "";
+    correctChars = 0;
+    totalChars = 0;
+    startTime = null;
+    iter = 0;
+    prevIter = undefined;
+
+    wpm = 0;
+    wpmElement.textContent = `WPM: ${wpm}`;
+
+    acc = 100;
+    accElement.textContent = `Accuracy: ${acc}%`;
+}
+
+
+const resetbtnElement = document.getElementById("restart-button");
+
+resetbtnElement.addEventListener("click", resetState);
