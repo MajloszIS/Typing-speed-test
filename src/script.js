@@ -45,16 +45,16 @@ data = await getData();
 
 function getText() {
     const texts = data[currentDifficulty];
-    const randomText = texts[Math.floor(Math.random() * texts.length)];
+    const randomText = texts[Math.floor(Math.random() * texts.length)].text;
     const textArea = document.getElementById("text");
 
-    const innerText = randomText.text
-        .split("")
-        .map((letter) => `<span class="char">${letter}</span>`)
-        .join("");
-    textArea.innerHTML = innerText;
+    const wordsArray = randomText.split(" ");
+    textArea.innerHTML = wordsArray.map(word => {
+        const lettersHtml = word.split("").map(l => `<span class="char">${l}</span>`).join("");
+        return `<span class="word">${lettersHtml}</span>`;
+    }).join('<span class="char"> </span>');
 
-    return randomText.text;
+    return randomText;
 }
 
 function getWords(text) {
@@ -68,13 +68,21 @@ function getSpan() {
     return letters;
 }
 
+function getWordStart(index) {
+    let pos = 0;
+    for (let i = 0; i < index; i++) {
+        pos += words[i].length + 1;
+    }
+    return pos;
+}
+
 function calculateWPM() {
     if (!startTime) return 0;
     const now = Date.now();
     const timeInMinutes = (now - startTime) / 1000 / 60;
 
     if (timeInMinutes === 0) return 0;
-    const wpm = correctWords / timeInMinutes;
+    const wpm = (correctChars / 5) / timeInMinutes;
 
     return Math.round(wpm);
 }
@@ -129,13 +137,11 @@ function endGame()
     if(personalBest <= wpm || isNaN(personalBest))
     {
         localStorage.setItem("PB", wpm);
-        pbElement.textContent = `Pesronal best: ${wpm}`;
-        console.log(wpm)
+        pbElement.textContent = `Pesronal best: ${wpm}`
     }
     else
     {
         pbElement.textContent = `Pesronal best: ${personalBest}`;
-        console.log(wpm)
     }
 }
 
@@ -153,6 +159,22 @@ document.addEventListener("keydown", (e) => {
             letters[iter].classList.remove("correct", "wrong");
             letters[iter].classList.add("neutral");
 
+            if (text[iter] === " ") 
+            {
+                let startWordIndex = getWordStart(currentWordIndex);
+                console.log(startWordIndex, iter);
+                currentWordIndex--;
+                chars = "";
+                for (let i = startWordIndex; i < iter; i++) {
+                    chars += letters[i].textContent;
+                }
+                console.log(chars)
+            }
+            else
+            {
+                chars = chars.slice(0, -1);
+            }
+
             if (wasCorrect) 
             {
                 correctChars--;
@@ -162,9 +184,6 @@ document.addEventListener("keydown", (e) => {
             {
                 totalChars--;
             }
-
-            chars = chars.slice(0, -1);
-            console.log(chars);
         }
     } 
     else 
@@ -188,7 +207,6 @@ document.addEventListener("keydown", (e) => {
 
                 if (e.key !== " ") {
                     chars += e.key;
-                    console.log(chars);
                 }
 
                 correctChars++;
@@ -200,30 +218,24 @@ document.addEventListener("keydown", (e) => {
                 if (e.key !== " ") 
                 {
                     chars += e.key;
-                    console.log(chars);
                 }
             }
             
-            if (chars === words[currentWordIndex]) 
-            {
-                console.log(chars);
-                correctWords++;
-                console.log(correctWords);
-                chars = "";
-            }
-
-            if (e.key === " ") 
-            {
-                chars = "";
+            if (e.key === " " && text[iter] === " ") 
+            {               
+                if (chars === words[currentWordIndex]) 
+                {
+                    correctWords++;
+                    console.log(correctWords);
+                }
                 currentWordIndex++;
+                chars = "";
             }
 
             iter++;
 
             if(iter >= letters.length-1)
             {
-                console.log(iter);
-                console.log(letters.length);
                 endGame();
                 resetState();
             }
