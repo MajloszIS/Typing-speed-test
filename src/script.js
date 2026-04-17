@@ -18,6 +18,10 @@ let totalChars = 0;
 
 let startTime = null;
 
+let timeLeft = 60;
+let timerInterval = null;
+
+
 document.addEventListener("change", (e) => {
     if (e.target.name === "difficulty") {
         currentDifficulty = e.target.value;
@@ -64,6 +68,14 @@ function getSpan() {
     return letters;
 }
 
+function getWordStart(index) {
+    let pos = 0;
+    for (let i = 0; i < index; i++) {
+        pos += words[i].length + 1;
+    }
+    return pos;
+}
+
 function calculateWPM() {
     if (!startTime) return 0;
     const now = Date.now();
@@ -103,12 +115,43 @@ function updateCursor(prevIter) {
     }
 }
 
+const timeElement = document.getElementById("timer");
+
+function startTimer()
+{
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        timeElement.innerHTML = `Time: ${timeLeft}`;
+        if(timeLeft <= 0) {
+            clearInterval(timerInterval);
+            endGame();
+        }
+    }, 1000);
+}
+
+function endGame()
+{
+    const pbElement = document.getElementById("personal-best-paragraph");
+    let personalBest = parseInt(localStorage.getItem("PB"));
+
+    if(personalBest <= wpm || isNaN(personalBest))
+    {
+        localStorage.setItem("PB", wpm);
+        pbElement.textContent = `Pesronal best: ${wpm}`
+    }
+    else
+    {
+        pbElement.textContent = `Pesronal best: ${personalBest}`;
+    }
+}
+
 document.addEventListener("keydown", (e) => {
     prevIter = iter;
 
     if (e.key == "Backspace") 
     {
-        if (iter > 0) {
+        if (iter > 0) 
+        {
             iter--;
             const wasCorrect = letters[iter].classList.contains("correct");
             const wasWrong = letters[iter].classList.contains("wrong");
@@ -116,55 +159,84 @@ document.addEventListener("keydown", (e) => {
             letters[iter].classList.remove("correct", "wrong");
             letters[iter].classList.add("neutral");
 
-            if (wasCorrect) {
-                correctChars--;
-                totalChars--;
-            } else if (wasWrong) {
-                totalChars--;
+            if (text[iter] === " ") 
+            {
+                currentWordIndex--;
+                let startWordIndex = getWordStart(currentWordIndex);
+                for (let i = startWordIndex; i < iter; i++) {
+                    chars += letters[i].textContent;
+                }
+                console.log(chars)
+            }
+            else
+            {
+                chars = chars.slice(0, -1);
             }
 
-            chars = chars.slice(0, -1);
-            console.log(chars);
-    }
-    } else {
-        if (e.key.length === 1) {
-            if (!startTime) {
+            if (wasCorrect) 
+            {
+                correctChars--;
+                totalChars--;
+            } 
+            else if (wasWrong) 
+            {
+                totalChars--;
+            }
+        }
+    } 
+    else 
+    {
+        if (e.key.length === 1) 
+        {
+            if (!startTime) 
+            {
                 startTime = Date.now();
+                if(currentMode == "Timed")
+                {
+                    startTimer();
+                }    
             }
 
             totalChars++;
 
-            if (e.key === text[iter]) {
+            if (e.key === text[iter]) 
+            {
                 letters[iter].classList.add("correct");
 
                 if (e.key !== " ") {
                     chars += e.key;
-                    console.log(chars);
                 }
 
                 correctChars++;
-            } else {
+            } 
+            else 
+            {
                 letters[iter].classList.add("wrong");
 
-                if (e.key !== " ") {
+                if (e.key !== " ") 
+                {
                     chars += e.key;
-                    console.log(chars);
                 }
             }
-
-            if (e.key === " ") {
-                chars = "";
-            }
-
-            if (chars === words[currentWordIndex]) {
-                console.log(chars);
-                correctWords++;
-                console.log(correctWords);
+            
+            if (e.key === " " && text[iter] === " ") 
+            {               
+                if (chars === words[currentWordIndex]) 
+                {
+                    correctWords++;
+                    console.log(correctWords);
+                }
                 currentWordIndex++;
                 chars = "";
             }
 
             iter++;
+
+            if(iter >= letters.length-1)
+            {
+                endGame();
+                resetState();
+            }
         }
     }
 
@@ -191,6 +263,9 @@ function resetState() {
     startTime = null;
     iter = 0;
     prevIter = undefined;
+    timeLeft = 60;
+    clearInterval(timerInterval);
+    timeElement.innerHTML = `Time: 60`;
 
     wpm = 0;
     wpmElement.textContent = `WPM: ${wpm}`;
