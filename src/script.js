@@ -45,16 +45,16 @@ data = await getData();
 
 function getText() {
     const texts = data[currentDifficulty];
-    const randomText = texts[Math.floor(Math.random() * texts.length)].text;
+    const randomText = texts[Math.floor(Math.random() * texts.length)];
     const textArea = document.getElementById("text");
 
-    const wordsArray = randomText.split(" ");
-    textArea.innerHTML = wordsArray.map(word => {
-        const lettersHtml = word.split("").map(l => `<span class="char">${l}</span>`).join("");
-        return `<span class="word">${lettersHtml}</span>`;
-    }).join('<span class="char"> </span>');
+    const innerText = randomText.text
+        .split("")
+        .map((letter) => `<span class="char">${letter}</span>`)
+        .join("");
+    textArea.innerHTML = innerText;
 
-    return randomText;
+    return randomText.text;
 }
 
 function getWords(text) {
@@ -82,7 +82,7 @@ function calculateWPM() {
     const timeInMinutes = (now - startTime) / 1000 / 60;
 
     if (timeInMinutes === 0) return 0;
-    const wpm = (correctChars / 5) / timeInMinutes;
+    const wpm = correctWords / timeInMinutes;
 
     return Math.round(wpm);
 }
@@ -161,10 +161,8 @@ document.addEventListener("keydown", (e) => {
 
             if (text[iter] === " ") 
             {
-                let startWordIndex = getWordStart(currentWordIndex);
-                console.log(startWordIndex, iter);
                 currentWordIndex--;
-                chars = "";
+                let startWordIndex = getWordStart(currentWordIndex);
                 for (let i = startWordIndex; i < iter; i++) {
                     chars += letters[i].textContent;
                 }
